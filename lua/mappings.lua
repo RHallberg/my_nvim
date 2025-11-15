@@ -10,6 +10,18 @@ vim.api.nvim_set_keymap('n', '<leader>cc', ':let @+=expand("%")<CR>', {noremap =
 -- NeoTreeRevealToggle
 vim.api.nvim_set_keymap('n', '<leader>tt', ':NeoTreeRevealToggle<CR>', { noremap = true, desc = "Toggle neotree file browser" })
 
+
+-- Toggle word wrap
+vim.keymap.set("n", "<leader>tw", function()
+  if vim.wo.wrap then
+    vim.wo.wrap = false
+    vim.wo.linebreak = false
+  else
+    vim.wo.wrap = true
+    vim.wo.linebreak = true
+  end
+end, { desc = "Toggle word wrap" })
+
 ---- FZF
 -- fzf files
 vim.api.nvim_set_keymap('n', '<leader>ff',
