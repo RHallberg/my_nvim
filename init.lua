@@ -53,13 +53,10 @@ vim.api.nvim_set_option('number', true)
 vim.api.nvim_set_option('relativenumber', true)
 
 -- LSP configs
---local lspconfig = require('lspconfig')
--- local lspconfig = vim.LSP.config()
-vim.lsp.enable({})
-
--- lspconfig.clangd.setup( {
---     root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git"),
--- })
+vim.lsp.enable({
+  "clangd",
+  "ruby_lsp",
+})
 
 vim.lsp.config("clangd", {
   cmd = { "clangd" }, -- ensure it's in PATH
