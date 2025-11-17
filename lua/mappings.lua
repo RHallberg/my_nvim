@@ -10,20 +10,19 @@ vim.api.nvim_set_keymap('n', '<leader>cc', ':let @+=expand("%")<CR>', {noremap =
 -- NeoTreeRevealToggle
 vim.api.nvim_set_keymap('n', '<leader>tt', ':NeoTreeRevealToggle<CR>', { noremap = true, desc = "Toggle neotree file browser" })
 
-
--- Toggle word wrap
-vim.keymap.set("n", "<leader>tw", function()
-  if vim.wo.wrap then
-    vim.wo.wrap = false
-    vim.wo.linebreak = false
-  else
-    vim.wo.wrap = true
-    vim.wo.linebreak = true
-  end
-end, { desc = "Toggle word wrap" })
+-- Oil
+vim.api.nvim_set_keymap('n', '<leader>oo', ':Oil<CR>', { noremap = true, desc = "Open oil file browser" })
 
 ---- FZF
 -- fzf files
+vim.api.nvim_set_keymap('n', '<leader>fa',
+    "<cmd>lua require('fzf-lua').files({cwd = 'app/'})<CR>",
+    { noremap = true, silent = true, desc = "Fuzzy find files in app"})
+
+vim.api.nvim_set_keymap('n', '<leader>fs',
+    "<cmd>lua require('fzf-lua').files({cwd = 'spec/'})<CR>",
+    { noremap = true, silent = true, desc = "Fuzzy find files in spec"})
+
 vim.api.nvim_set_keymap('n', '<leader>ff',
     "<cmd>lua require('fzf-lua').files()<CR>",
     { noremap = true, silent = true, desc = "Fuzzy find files"})
@@ -49,13 +48,26 @@ vim.api.nvim_set_keymap('n', '<leader>km',
     { noremap = true, silent = true, desc = "fuzzy find keymaps"})
 
 ---- tabs
-vim.api.nvim_set_keymap('n', '<C-t>n', ':tabnew<CR>', { noremap = true, desc = "Open new tab"})
-vim.api.nvim_set_keymap('n', '<C-t>h', ':tabprevious<CR>', { noremap = true, desc = "Go to previous tab" })
-vim.api.nvim_set_keymap('n', '<C-t>l', ':tabnext<CR>', { noremap = true, desc = "Go to next tab"})
-vim.api.nvim_set_keymap('n', '<C-t>c', ':tabclose<CR>', { noremap = true, desc = "Close current tab"})
+vim.api.nvim_set_keymap('n', '<leader>wn', ':tabnew<CR>', { noremap = true, desc = "Open new tab"})
+vim.api.nvim_set_keymap('n', '<leader>wq', ':tabprevious<CR>', { noremap = true, desc = "Go to previous tab" })
+vim.api.nvim_set_keymap('n', '<leader>we', ':tabnext<CR>', { noremap = true, desc = "Go to next tab"})
+vim.api.nvim_set_keymap('n', '<leader>wc', ':tabclose<CR>', { noremap = true, desc = "Close current tab"})
+
+--- Teminal
+-- Open terminal
+vim.api.nvim_set_keymap('n', '<leader>ot', ':terminal<CR>', { noremap = true, desc = "Open terminal"})
+-- Exit terminal mode
+vim.api.nvim_set_keymap('t', 'jk', '<C-\\><C-n>', { noremap = true, desc = "Exit terminal mode"})
+
+-- Writing files
+vim.api.nvim_set_keymap('n', '<leader><C-s>', ':w<CR>', { noremap = true, desc = "Write file"})
+vim.api.nvim_set_keymap('n', '<leader><C-q>', ':wqa!<CR>', { noremap = true, desc = "Write file"})
 
 -- Session
-vim.api.nvim_set_keymap('n', '<leader>oo', ':Obsession<CR>', { noremap = true, desc = "Start session"})
+vim.api.nvim_set_keymap('n', '<leader>os', ':Obsession<CR>', { noremap = true, desc = "Start session"})
+
+-- Quit quick
+vim.api.nvim_set_keymap('n', '<leader>qq', ':qa<CR>', { noremap = true, desc = "Quit all"})
 
 -- cycle through buffers
 --back
@@ -89,8 +101,25 @@ function DeleteTrailingSpaces()
     vim.fn.setpos('.', cursor_position)
 end
 
+-- Run tests
+vim.keymap.set('n', '<leader>s', ':TestNearest<CR>', { noremap = true, silent = true, desc = "Run nearest test" })
+vim.keymap.set('n', '<leader>S', ':TestFile<CR>', { noremap = true, silent = true, desc = "Run test file" })
+
+-- Display warning/error
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, {noremap = true, silent = true, desc = "Diagnostic"})
+
+-- Toggle diagnostic lines
+vim.keymap.set('n', '<leader>td', function()
+  local new_config = not vim.diagnostic.config().virtual_lines
+  vim.diagnostic.config({ virtual_lines = new_config })
+end, { desc = 'Toggle diagnostic virtual_lines' })
+
 -- Linter code action
 vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { noremap = true, silent = true, desc = "LSP Code Action" })
+
+-- Copilot
+vim.g.copilot_no_tab_map = true
+vim.api.nvim_set_keymap('i', '<C-j>', 'copilot#Accept("<CR>")', { silent = true, expr = true, desc = "Accept Copilot suggestion" })
 
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
@@ -107,6 +136,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { buffer = ev.buf})
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, { buffer = ev.buf})
     vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, { buffer = ev.buf})
+    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { buffer = ev.buf, desc = "Rename definition"})
     vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { buffer = ev.buf, desc = "Rename definition"})
     vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, { buffer = ev.buf, desc = "Code action (for example linting)"})
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, { buffer = ev.buf})
