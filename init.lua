@@ -4,13 +4,14 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 require('config.lazy')
---require('config.treesitter')
-
 require('lualine').setup{
+
   extensions = {
     'fzf',
     'neo-tree'
-  }
+  },
+  options = {theme = 'onelight'}
+
 }
 require('mappings')
 
@@ -21,7 +22,8 @@ vim.g.maplocalleader = "\\"
 --vim.o.t_color = 256
 vim.o.background = 'light'
 vim.o.termguicolors = true
-vim.cmd('colorscheme catppuccin-latte')
+vim.o.cmdheight = 0
+vim.cmd.colorscheme "catppuccin-latte"
 
 local opt = vim.opt  -- to set options
 -- Yank and paste to/from system clipboard
@@ -46,65 +48,33 @@ opt.splitbelow = true               -- Put new windows below current
 opt.splitright = true               -- Put new windows right of current
 opt.tabstop = 2                     -- Number of spaces tabs count for
 opt.wrap = false
-opt.swapfile = false
+
 
 -- Set relative line numbers
 vim.api.nvim_set_option('number', true)
 vim.api.nvim_set_option('relativenumber', true)
 
--- LSP configs
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+vim.lsp.config('zls', {
+  capabilities = capabilities
+})
+vim.lsp.config('ruby_lsp', {
+  capabilities = capabilities
+})
+vim.lsp.config('solargraph', {
+  capabilities = capabilities
+})
+vim.lsp.config('clangd', {
+  capabilities = capabilities
+})
+
 vim.lsp.enable({
-  "clangd",
   "ruby_lsp",
-})
-
-vim.lsp.config("clangd", {
-  cmd = { "clangd" }, -- ensure it's in PATH
-  filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
-  root_markers = {
-    '.clangd',
-    '.clang-tidy',
-    '.clang-format',
-    'compile_commands.json',
-    'compile_flags.txt',
-    'configure.ac', -- AutoTools
-    '.git',
-  },
-  capabilities = {
-    textDocument = {
-      completion = {
-        editsNearCursor = true,
-      },
-    },
-    offsetEncoding = { 'utf-8', 'utf-16' },
-  },
-  ---@param init_result ClangdInitializeResult
-  on_init = function(client, init_result)
-    if init_result.offsetEncoding then
-      client.offset_encoding = init_result.offsetEncoding
-    end
-  end,
-  on_attach = function(client, bufnr)
-    vim.api.nvim_buf_create_user_command(bufnr, 'LspClangdSwitchSourceHeader', function()
-      switch_source_header(bufnr, client)
-    end, { desc = 'Switch between source/header' })
-
-    vim.api.nvim_buf_create_user_command(bufnr, 'LspClangdShowSymbolInfo', function()
-      symbol_info(bufnr, client)
-    end, { desc = 'Show symbol info' })
-  end,
-})
-
-vim.diagnostic.config({
-  virtual_text = true,
-  signs = true,
-  update_in_insert = false,
-  underline = true,
-  severity_sort = false,
-  float = true,
+  "solargraph",
+  "purescriptls",
+  "hls",
+  "clangd",
+  "zls",
 })
 
 
-
--- Use LspAttach autocommand to only map the following keys
--- after the language server attaches to the current buffer
