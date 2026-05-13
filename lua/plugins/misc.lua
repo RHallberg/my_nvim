@@ -8,7 +8,6 @@ return {
     lazy = false,
     dependencies = { "MunifTanjim/nui.nvim" },
     opts = {},
-  },
-  { "nvim-mini/mini.pairs", opts = {} },
+  }
 }
 
